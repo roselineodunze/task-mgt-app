@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       currentSlideIndex = 0;
     }
     if (sliderWrapper) {
-      sliderWrapper.style.transform = `translateX(-${currentSlideIndex * 50}%)`;
+      sliderWrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
     }
   }, 4000);
 
