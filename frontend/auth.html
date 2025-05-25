@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="/frontend/style.css" rel="stylesheet" />
+    <title>Authentication</title>
+  </head>
+  <body class="relative">
+    <section
+      class="relative flex flex-col justify-center items-center h-screen bg-purple-300"
+    >
+      <form
+        id="authForm"
+        class="relative bg-gray-800 w-[80%] max-w-[330px] p-10 rounded-4xl"
+      >
+        <!-- avatar -->
+        <div
+          class="absolute bg-gray-600 -top-12 left-1/2 -translate-x-1/2 h-24 w-24 rounded-full p-[2px] flex items-center justify-center box-border"
+        >
+          <img
+            src="images/mic.png"
+            class="h-full w-full object-cover object-center rounded-full"
+          />
+          <div
+            class="absolute top-18 z-50 left-18 cursor-pointer w-4 h-4 box-border rounded-full bg-purple-300 flex justify-center items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100%"
+              height="100%"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-plus-icon lucide-plus"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- SWITCH FORMS -->
+        <div class="flex mt-9 mb-5 items-center border-b-1 border-gray-600">
+          <div id="login" class="auth text-center w-1/2">
+            <h3 class="text-[20px] text-slate-100 text-center cursor-pointer">
+              Login
+            </h3>
+          </div>
+          <div id="signup" class="auth w-1/2 text-center add-border">
+            <h3 class="text-[20px] text-slate-100 text-center cursor-pointer">
+              Sign Up
+            </h3>
+          </div>
+        </div>
+
+        <!-- FORM ITSELF -->
+        <div id="fullnameGroup">
+          <label
+            for="fullname"
+            class="text-gray-600 text-xs pl-2 uppercase mb-3"
+            >Full Name</label
+          >
+          <input
+            type="text"
+            id="fullname"
+            name="fullname"
+            required
+            class="rounded-md mb-5 bg-gray-600 w-full h-7 px-2 text-slate-300 focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-500"
+          />
+        </div>
+
+        <label for="email" class="text-gray-600 mb-3 text-xs pl-2 uppercase"
+          >Email</label
+        >
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          class="rounded-md mb-5 bg-gray-600 w-full h-7 px-2 text-slate-300 focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-500"
+        />
+
+        <label for="password" class="text-gray-600 mb-3 text-xs pl-2 uppercase"
+          >Password</label
+        >
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          class="rounded-md mb-5 bg-gray-600 w-full h-7 px-2 text-slate-300 focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-500"
+        />
+        <div id="confirmPasswordGroup">
+          <label
+            for="confirm-password"
+            class="text-gray-600 mb-3 text-xs pl-2 uppercase"
+            >Confirm Password</label
+          >
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+            class="rounded-md mb-5 bg-gray-600 w-full h-7 px-2 text-slate-300 focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-500"
+          />
+        </div>
+        <div id="error-message" style="color: red; display: none"></div>
+
+        <div class="flex justify-center">
+          <button
+            type="submit"
+            value="Submit"
+            class="bg-purple-300 w-[150px] h-8 rounded-md mt-1 text-sm text-slate-200 cursor-pointer"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </section>
+  </body>
+  <script src="/frontend/script.js"></script>
+</html>

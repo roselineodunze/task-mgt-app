@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="/frontend/style.css" rel="stylesheet" />
+    <title>Authentication</title>
+  </head>
+  <body class="">
+    <section
+      class="flex flex-col justify-center items-center h-screen bg-purple-300"
+    >
+      <div class="w-[80%] max-w-[350px] h-[80%] rounded-4xl shadow-xl px-4">
+        <h3 class="text-[22px] mb-4 font-bold">Your To do</h3>
+        <div id="success-message" class="bg-green-300 none"></div>
+        <form id="taskForm" class="flex items-center gap-2 w-full mb-5">
+          <div class="border-b-2 border-gray-800 pl-1 w-full">
+            <input
+              id="task"
+              type="text"
+              name="task"
+              placeholder="Add new task"
+              class="border-none text-sm focus:outline-none focus:ring-0 focus:border-none"
+              required
+            />
+          </div>
+          <button
+            value="submit"
+            type="submit"
+            class="h-8 w-10 cursor-pointer rounded-md bg-gray-600 p-1 flex justify-center items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100%"
+              height="100%"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-plus-icon lucide-plus"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+          </button>
+        </form>
+
+        <!-- list component -->
+        <div id="taskList"></div>
+
+        <p id="taskLength"><i class="font-semibold text-sm">Your remaining todos: 0</i></p>
+        <p class="text-xs font-light mt-2">
+          <i>"You have the capacity to be great, be great."</i>
+        </p>
+      </div>
+    </section>
+  </body>
+  <script src="/frontend/script.js"></script>
+</html>

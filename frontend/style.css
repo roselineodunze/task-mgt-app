@@ -1,0 +1,48 @@
+.slider-wrapper {
+  transition: transform 0.5s ease;
+}
+
+.inactive-field {
+  display: none;
+}
+
+.auth {
+  border-bottom: 3px solid transparent; /* Reserve space for the border */
+  position: relative;
+}
+
+.add-border {
+  border-bottom-width: 3px;
+  border-bottom-color: #f1f5f9;
+}
+
+.auth::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background-color: #f1f5f9;
+  transform: scaleX(0); /* Start invisible */
+  transform-origin: left;
+  transition: transform 0.2s ease-in-out;
+}
+
+.auth.add-border::after {
+  transform: scaleX(1); /* Expand from left to right */
+}
+
+.field-wrapper {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-10px);
+  transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+}
+
+.field-wrapper.active {
+  max-height: 200px; /* large enough for content */
+  opacity: 1;
+  transform: translateY(0);
+}
