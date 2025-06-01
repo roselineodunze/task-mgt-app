@@ -10,6 +10,7 @@ async function createSchema() {
         fullname VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
+        quote VARCHAR(255) DEFAULT '"Click to edit quote. Make it personal.🙂"',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -18,7 +19,9 @@ async function createSchema() {
       CREATE TABLE IF NOT EXISTS todolist (
         id INT AUTO_INCREMENT PRIMARY KEY,
         task TEXT NOT NULL,
-        isCompleted BOOLEAN DEFAULT FALSE
+        isCompleted BOOLEAN DEFAULT FALSE,
+        userId INT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 

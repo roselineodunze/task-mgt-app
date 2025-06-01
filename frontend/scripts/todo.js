@@ -1,109 +1,34 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const sliderWrapper = document.querySelector(".slider-wrapper");
-  const sliderImages = document.querySelectorAll(".slide");
-  const authForms = document.querySelectorAll(".auth");
-  const fullnameField = document.getElementById("fullnameGroup");
-  const fullnameInput = document.getElementById("fullname");
-  const confirmPasswordField = document.getElementById("confirmPasswordGroup");
-  const confitmPasswordInput = document.getElementById("confirmPassword");
-  const form = document.getElementById("authForm");
-  const errorMessage = document.getElementById("error-message");
   const successMessage = document.getElementById("success-message");
   const taskForm = document.getElementById("taskForm");
   const taskFormInput = document.querySelector("#taskForm input");
   const taskList = document.getElementById("taskList");
   const taskLength = document.querySelector("#taskLength i");
+  const quoteContainer = document.getElementById("quote");
+  const quoteEditIcon = document.querySelector("#quote svg");
+  const quoteText = document.querySelector("#quote i");
 
-  let currentSlideIndex = 0;
-  let isSignup = true;
   let isEdit = false;
-  let taskIdToEdit = null
+  let taskIdToEdit = null;
+  let isQuote = false;
 
   loadTasks();
 
-  setInterval(() => {
-    if (currentSlideIndex < sliderImages.length - 1) {
-      currentSlideIndex += 1;
-    } else {
-      currentSlideIndex = 0;
-    }
-    if (sliderWrapper) {
-      sliderWrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-    }
-  }, 4000);
-
-  const updateFormMode = () => {
-    fullnameField.style.display = isSignup ? "block" : "none";
-    fullnameInput.disabled = isSignup ? false : true;
-
-    confirmPasswordField.style.display = isSignup ? "block" : "none";
-    confitmPasswordInput.disabled = isSignup ? false : true;
-  };
-
-  authForms.forEach((form) => {
-    form.addEventListener("click", () => {
-      authForms.forEach((f) => f.classList.remove("add-border"));
-      form.classList.add("add-border");
-      if (form.id === "login") {
-        isSignup = false;
-      } else if (form.id === "signup") {
-        isSignup = true;
-      }
-      updateFormMode();
-    });
-  });
-
-  if (form) {
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      console.log("starting");
-
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-      console.log(data);
-
-      try {
-        if (isSignup) {
-          console.log("it is signup");
-          if (data.confirmPassword !== data.password) {
-            errorMessage.style.display = "block";
-            errorMessage.textContent = "Password does not match";
-            return;
-          }
-          console.log("Submitting data to server:", data);
-          const response = await fetch(
-            "http://localhost:3000/api/auth/signup",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            }
-          );
-          if (response.ok) {
-            window.location.href = "todo-list.html";
-          } else {
-            console.error("Failed:", response.status);
-          }
-        } else {
-          const response = await fetch("http://localhost:3000/api/auth/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-          if (response.ok) {
-            window.location.href = "todo-list.html";
-          } else {
-            console.error("Failed:", response.status);
-          }
+  if (quoteContainer && quoteEditIcon && quoteText && taskFormInput) {
+    ["mouseover", "mouseout", "click"].forEach((event) => {
+      quoteContainer.addEventListener(event, () => {
+        quoteEditIcon.classList.toggle("hidden", event === "mouseout");
+        if (event === "click") {
+          taskFormInput.value = quoteText.textContent;
+          isQuote = true;
+          editQuote();
         }
-      } catch (error) {
-        console.error("Error:", error);
-      }
+      });
     });
+  }
+
+  async function editQuote() {
+    return;
   }
 
   //todo list
@@ -140,8 +65,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
           data.id = taskIdToEdit;
           await handleEditTask(data);
-          isEdit = false
-          taskIdToEdit = null
+          isEdit = false;
+          taskIdToEdit = null;
         }
       } catch (error) {
         console.error("Error:", error);
@@ -218,7 +143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         isEdit = true;
         taskIdToEdit = editTask.dataset.id;
         const taskText = editTask.dataset.task;
-        taskFormInput.value = taskText
+        taskFormInput.value = taskText;
       }
     });
 
@@ -266,41 +191,41 @@ document.addEventListener("DOMContentLoaded", async () => {
       taskList.innerHTML = tasks
         .map(
           (task) => `
-        <div
-              class="w-full border rounded-md flex items-center justify-center gap-2 h-10 px-3 my-3"
-            >
-              <input
-                type="checkbox"
-                ${task.isCompleted === 1 ? "checked" : ""}
-                class="text-white bg-gray-600 border border-black h-4 w-4"
-                data-id="${task.id}"
-                data-task="${task.task.replace(/"/g, "&quot;")}"
-                
-              />
-              <p class="flex-1 text-sm font-medium task-item cursor-pointer" 
-                data-id="${task.id}"
-                data-task="${task.task.replace(/"/g, "&quot;")}">
-                ${task.task}
-              </p>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="delete-btn lucide lucide-x-icon lucide-x cursor-pointer"
-                data-id="${task.id}"
+          <div
+                class="w-full border rounded-md flex items-center justify-center gap-2 h-10 px-3 my-3"
               >
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </div>
-            
-        `
+                <input
+                  type="checkbox"
+                  ${task.isCompleted === 1 ? "checked" : ""}
+                  class="text-white bg-gray-600 border border-black h-4 w-4"
+                  data-id="${task.id}"
+                  data-task="${task.task.replace(/"/g, "&quot;")}"
+                  
+                />
+                <p class="flex-1 text-sm font-medium task-item cursor-pointer" 
+                  data-id="${task.id}"
+                  data-task="${task.task.replace(/"/g, "&quot;")}">
+                  ${task.task}
+                </p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="delete-btn lucide lucide-x-icon lucide-x cursor-pointer"
+                  data-id="${task.id}"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </div>
+              
+          `
         )
         .join("");
       const completedTasks = tasks.filter((t) => t.isCompleted === 0);
