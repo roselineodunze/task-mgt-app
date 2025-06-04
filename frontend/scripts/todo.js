@@ -1,3 +1,5 @@
+import { fetchUser } from "./utils.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
   const successMessage = document.getElementById("success-message");
   const taskForm = document.getElementById("taskForm");
@@ -12,7 +14,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   let taskIdToEdit = null;
   let isQuote = false;
 
+  const token = localStorage.getItem("token");
+  const user = await fetchUser();
+  console.log(user);
+  quoteText.textContent = user.quote;
+
   loadTasks();
+
+  const handleEditQuote = async (data) => {
+    const newData = {
+      quote: data.task,
+    };
+    const response = await fetch("http://localhost:3000/api/edit-quote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(newData),
+    });
+    if (response.ok) {
+      console.log("okay");
+      taskFormInput.value = "";
+      const result = await response.json();
+      const { user } = result.data;
+      sessionStorage.removeItem("user");
+      sessionStorage.setItem("user", JSON.stringify(user));
+      window.location.href = "todo-list.html";
+    } else {
+      console.error("Failed to edit quote:", response.status);
+    }
+  };
 
   if (quoteContainer && quoteEditIcon && quoteText && taskFormInput) {
     ["mouseover", "mouseout", "click"].forEach((event) => {
@@ -21,14 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (event === "click") {
           taskFormInput.value = quoteText.textContent;
           isQuote = true;
-          editQuote();
         }
       });
     });
-  }
-
-  async function editQuote() {
-    return;
   }
 
   //todo list
@@ -41,32 +68,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(data);
 
       try {
-        if (!isEdit) {
-          console.log("it is new");
-          const response = await fetch("http://localhost:3000/api/todos", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-          if (response.ok) {
-            taskFormInput.value = "";
-            loadTasks();
-            successMessage.style.display = "block";
-            successMessage.textContent = "Task added successfully!";
-            setInterval(() => {
-              successMessage.textContent = "";
-              successMessage.style.display = "none";
-            }, 2000);
-          } else {
-            console.error("Failed:", response.status);
-          }
+        if (isQuote) {
+          await handleEditQuote(data);
+          taskFormInput.value = "";
         } else {
-          data.id = taskIdToEdit;
-          await handleEditTask(data);
-          isEdit = false;
-          taskIdToEdit = null;
+          if (!isEdit) {
+            console.log("it is new");
+            const newData = {
+              ...data,
+              userId: user.id,
+            };
+            const response = await fetch("http://localhost:3000/api/todos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(newData),
+            });
+            if (response.ok) {
+              taskFormInput.value = "";
+              loadTasks();
+              successMessage.style.display = "block";
+              successMessage.textContent = "Task added successfully!";
+              setInterval(() => {
+                successMessage.textContent = "";
+                successMessage.style.display = "none";
+              }, 2000);
+            } else {
+              console.error("Failed:", response.status);
+            }
+          } else {
+            data.id = taskIdToEdit;
+            await handleEditTask(data);
+            isEdit = false;
+            taskIdToEdit = null;
+          }
         }
       } catch (error) {
         console.error("Error:", error);
@@ -78,6 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -109,6 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(newData),
         });
@@ -166,6 +205,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify(data),
             }
@@ -185,7 +225,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function loadTasks() {
     try {
-      const response = await fetch("http://localhost:3000/api/todos");
+      const response = await fetch(`http://localhost:3000/api/todos`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       const tasks = await response.json();
 
       taskList.innerHTML = tasks
