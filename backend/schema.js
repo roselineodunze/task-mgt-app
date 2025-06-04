@@ -16,16 +16,16 @@ async function createSchema() {
     `);
 
     await db.query(`
-      CREATE TABLE IF NOT EXISTS todolist (
+      CREATE TABLE IF NOT EXISTS tasks (
         id INT AUTO_INCREMENT PRIMARY KEY,
         task TEXT NOT NULL,
         isCompleted BOOLEAN DEFAULT FALSE,
         userId INT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
-    console.log('✅ Tables "users" and "todolist" are ready.');
+    console.log('✅ Tables "users" and "tasks" are ready.');
   } catch (err) {
     console.error('❌ Error creating schema:', err);
   }

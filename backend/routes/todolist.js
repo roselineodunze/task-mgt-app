@@ -9,8 +9,10 @@ export function handleToDoRoutes(req, res) {
 
     // GET all todos
     if (parsedUrl.pathname === "/api/todos" && method === "GET") {
+      const query = new URLSearchParams(parsedUrl.query);
+      const userId = query.get("userId");
 
-      db.query("SELECT * FROM todolist")
+      db.query("SELECT * FROM tasks WHERE userId = ?", [userId])
         .then(([rows]) => {
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(rows));
@@ -28,14 +30,14 @@ export function handleToDoRoutes(req, res) {
 
       req.on("end", async () => {
         try {
-          const { task } = JSON.parse(body);
+          const { task, userId } = JSON.parse(body);
 
           if (!task) {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ error: "Please enter a task!" }));
           }
 
-          await db.query("INSERT INTO todolist (task) VALUES (?)", [task]);
+          await db.query("INSERT INTO tasks (task, userId) VALUES (?, ?)", [task, userId]);
 
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ message: "New task received", task }));
@@ -62,14 +64,14 @@ export function handleToDoRoutes(req, res) {
             return res.end(JSON.stringify({ error: "No id passed!" }));
           }
 
-          const [taskExists] = await db.query("SELECT * FROM todolist WHERE id = ?", [id]);
+          const [taskExists] = await db.query("SELECT * FROM tasks WHERE id = ?", [id]);
 
           if (taskExists.length === 0) {
             res.writeHead(404, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ error: "Task not found" }));
           }
           
-          const [result] = await db.query("DELETE FROM todolist WHERE id = ?", [id]);
+          const [result] = await db.query("DELETE FROM tasks WHERE id = ?", [id]);
 
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ message: "Task deleted successfully"}));
@@ -99,14 +101,14 @@ export function handleToDoRoutes(req, res) {
             return;
           }
 
-          const [taskExists] = await db.query("SELECT * FROM todolist WHERE id = ?", [id]);
+          const [taskExists] = await db.query("SELECT * FROM tasks WHERE id = ?", [id]);
 
           if (taskExists.length === 0) {
             res.writeHead(404, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ error: "Task not found" }));
           }
 
-          await db.query("UPDATE todolist SET task = ?, isCompleted = ? WHERE id = ?", [task, isCompleted, id])
+          await db.query("UPDATE tasks SET task = ?, isCompleted = ? WHERE id = ?", [task, isCompleted, id])
           
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ message: "Task updated successfully"}));
