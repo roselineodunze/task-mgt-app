@@ -8,12 +8,11 @@ const PORT = 3000;
 createSchema()
   .then(() => {
     const server = http.createServer((req, res) => {
-      res.setHeader("Access-Control-Allow-Origin", "*"); // Allow all origins, or restrict to specific origin
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific methods
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+      res.setHeader("Access-Control-Allow-Origin", "*"); 
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       if (req.method === "OPTIONS") {
-        // Handle the preflight request for CORS
-        res.writeHead(204); // No content
+        res.writeHead(204);
         res.end();
         return;
       }

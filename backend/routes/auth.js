@@ -48,7 +48,7 @@ export function handleAuthRoutes(req, res) {
           const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
             expiresIn: JWT_EXPIRES_IN,
           });
-          console.log(user)
+          console.log(user);
 
           res.writeHead(200, {
             "Content-Type": "application/json",
@@ -111,7 +111,6 @@ export function handleAuthRoutes(req, res) {
           const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, {
             expiresIn: JWT_EXPIRES_IN,
           });
-          
 
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
@@ -135,7 +134,62 @@ export function handleAuthRoutes(req, res) {
       res.end(JSON.stringify({ error: "Route not found" }));
     }
   } else if (url === "/api/edit-quote" && method === "POST") {
-    return;
+    const verfiedUserId = verifyToken(req, res);
+
+    if (!verfiedUserId) {
+      return;
+    }
+    const userId = req.user.userId;
+    
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+
+    req.on("end", async () => {
+      try {
+        const { quote } = JSON.parse(body);
+
+        if (!quote || !userId) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: "All fields are required!" }));
+        }
+
+        const [existingUser] = await db.query(
+          "SELECT * FROM users WHERE id = ?",
+          [userId]
+        );
+
+        if (existingUser.length === 0) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: "User not found." }));
+        }
+
+        await db.query("UPDATE users SET quote = ? WHERE id = ?", [
+          quote,
+          userId,
+        ]);
+
+        const [updatedUser] = await db.query(
+          "SELECT * FROM users WHERE id = ?",
+          [userId]
+        );
+
+        res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            message: "Quote successfully updated",
+            data: { user: updatedUser[0] },
+          })
+        );
+      } catch (err) {
+        console.error("❌ Signup error:", err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            error: "Server error, please try again later.",
+          })
+        );
+      }
+    });
   } else {
     return false;
   }
